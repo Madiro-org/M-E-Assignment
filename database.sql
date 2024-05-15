@@ -75,6 +75,26 @@ CREATE TABLE obs (
     value_datetime DATE
 );
 
+CREATE TABLE drug_order (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT,
+    drug_name VARCHAR(100),
+    dose_units VARCHAR(50),
+    dose_strength DECIMAL(10, 2),
+    frequency VARCHAR(50),
+    duration INT,
+    duration_units VARCHAR(50),
+    instructions VARCHAR(255)
+);
+
+CREATE TABLE test_order (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT,
+    test_name VARCHAR(100),
+    urgency VARCHAR(50),
+    instructions VARCHAR(255)
+);
+
 -- Insert fake data
 INSERT INTO person (gender, birthdate, birthdate_estimated, dead, death_date, cause_of_death)
 VALUES
@@ -86,11 +106,11 @@ VALUES
 
 INSERT INTO patient (patient_id, creator, date_created, voided, voided_by, date_voided, void_reason)
 VALUES
-(1, 1, '2024-05-01 08:00:00', FALSE, NULL, NULL, NULL),
-(2, 1, '2024-05-01 08:00:00', FALSE, NULL, NULL, NULL),
-(3, 1, '2024-05-01 08:00:00', FALSE, NULL, NULL, NULL),
-(4, 1, '2024-05-01 08:00:00', FALSE, NULL, NULL, NULL),
-(5, 1, '2024-05-01 08:00:00', FALSE, NULL, NULL, NULL);
+(1, 1, '2024-05-15 08:00:00', FALSE, NULL, NULL, NULL),
+(2, 1, '2024-05-15 08:00:00', FALSE, NULL, NULL, NULL),
+(3, 1, '2024-05-15 08:00:00', FALSE, NULL, NULL, NULL),
+(4, 1, '2024-05-15 08:00:00', FALSE, NULL, NULL, NULL),
+(5, 1, '2024-05-15 08:00:00', FALSE, NULL, NULL, NULL);
 
 INSERT INTO person_name (person_id, given_name, middle_name, family_name, preferred)
 VALUES
@@ -118,11 +138,11 @@ VALUES
 
 INSERT INTO encounter (patient_id, encounter_datetime, location_id, form_id, encounter_type)
 VALUES
-(1, '2024-05-01 08:30:00', 1, 1, 1),
-(2, '2024-05-01 09:00:00', 1, 1, 1),
-(3, '2024-05-01 09:30:00', 1, 1, 1),
-(4, '2024-05-01 10:00:00', 1, 1, 1),
-(5, '2024-05-01 10:30:00', 1, 1, 1);
+(1, '2024-05-15 08:30:00', 1, 1, 1),
+(2, '2024-05-15 09:00:00', 1, 1, 1),
+(3, '2024-05-15 09:30:00', 1, 1, 1),
+(4, '2024-05-15 10:00:00', 1, 1, 1),
+(5, '2024-05-15 10:30:00', 1, 1, 1);
 
 INSERT INTO concept (short_name, description)
 VALUES
@@ -130,20 +150,29 @@ VALUES
 ('Medication', 'Medication prescribed to the patient'),
 ('Lab Test', 'Lab test results for the patient');
 
+-- Insert observation data for diagnoses
 INSERT INTO obs (person_id, concept_id, encounter_id, obs_datetime, value_text, value_numeric, value_datetime)
 VALUES
-(1, 1, 1, '2024-05-01 08:30:00', 'Hypertension', NULL, NULL),
-(1, 2, 1, '2024-05-01 08:30:00', 'Lisinopril', NULL, NULL),
-(1, 3, 1, '2024-05-01 08:30:00', NULL, 120.5, NULL),
-(2, 1, 2, '2024-05-01 09:00:00', 'Diabetes', NULL, NULL),
-(2, 2, 2, '2024-05-01 09:00:00', 'Metformin', NULL, NULL),
-(2, 3, 2, '2024-05-01 09:00:00', NULL, 150.2, NULL),
-(3, 1, 3, '2024-05-01 09:30:00', 'Asthma', NULL, NULL),
-(3, 2, 3, '2024-05-01 09:30:00', 'Albuterol', NULL, NULL),
-(3, 3, 3, '2024-05-01 09:30:00', NULL, 98.7, NULL),
-(4, 1, 4, '2024-05-01 10:00:00', 'Anemia', NULL, NULL),
-(4, 2, 4, '2024-05-01 10:00:00', 'Iron Supplements', NULL, NULL),
-(4, 3, 4, '2024-05-01 10:00:00', NULL, 110.3, NULL),
-(5, 1, 5, '2024-05-01 10:30:00', 'Hyperlipidemia', NULL, NULL),
-(5, 2, 5, '2024-05-01 10:30:00', 'Atorvastatin', NULL, NULL),
-(5, 3, 5, '2024-05-01 10:30:00', NULL, 200.1, NULL);
+(1, 1, 1, '2024-05-15 08:30:00', 'Hypertension', NULL, NULL),
+(2, 1, 2, '2024-05-15 09:00:00', 'Diabetes', NULL, NULL),
+(3, 1, 3, '2024-05-15 09:30:00', 'Asthma', NULL, NULL),
+(4, 1, 4, '2024-05-15 10:00:00', 'Anemia', NULL, NULL),
+(5, 1, 5, '2024-05-15 10:30:00', 'Hyperlipidemia', NULL, NULL);
+
+-- Insert medication orders
+INSERT INTO drug_order (patient_id, drug_name, dose_units, dose_strength, frequency, duration, duration_units, instructions)
+VALUES
+(1, 'Amoxicilline', 'mg', 500, 'TID', 7, 'days', 'Take with water'),
+(2, 'Albendazole', 'mg', 400, 'Once', 1, 'dose', 'Take on empty stomach'),
+(3, 'Artemeter', 'mg', 50, 'BID', 3, 'days', 'Take with food'),
+(4, 'Paracetamol', 'mg', 500, 'QID', 5, 'days', 'Take as needed for pain'),
+(5, 'Amoxicilline', 'mg', 500, 'TID', 7, 'days', 'Take with water');
+
+-- Insert lab test orders
+INSERT INTO test_order (patient_id, test_name, urgency, instructions)
+VALUES
+(1, 'Rapid test for malaria - GE', 'Standard', 'Perform test immediately on receipt'),
+(2, 'Complete blood count - NFS', 'Urgent', 'Send results to consulting physician'),
+(3, 'CRP - C-reactive protein', 'Standard', 'No special preparation required'),
+(4, 'Rapid test for malaria - GE', 'Urgent', 'Repeat test if initial result is negative'),
+(5, 'Complete blood count - NFS', 'Standard', 'Check for anemia indicators');
